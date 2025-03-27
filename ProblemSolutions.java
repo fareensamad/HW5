@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   NAME: Fareen Samad      SECTION: COMP 272-001
  *
  *   This java file contains the problem solutions of isSubSet, findKthLargest,
  *   and sort2Arrays methods. You should utilize the Java Collection Framework for
@@ -16,7 +16,7 @@ class ProblemSolutions {
      * Method: isSubset()
      *
      * Given two arrays of integers, A and B, return whether
-     * array B is a subset if array A. Example:
+     * array B is a subset of array A. Example:
      *      Input: [1,50,55,80,90], [55,90]
      *      Output: true
      *      Input: [1,50,55,80,90], [55,90, 99]
@@ -32,10 +32,23 @@ class ProblemSolutions {
 
     public boolean isSubset(int list1[], int list2[]) {
 
-        // ADD YOU CODE HERE -- DON'T FORGET TO ADD YOR NAME AT TOP OF FILE
+        HashSet<Integer> set = new HashSet<>(); // HashSet to store elements of list1
+        
+        // Add elements of list1 to HashSet 
+        for (int num : list1) {
+            set.add(num);
+        }
 
-        return false;
-    }
+        // Check list2 elements with list1, if any element is in list2 but not list1, return false
+        for (int numTwo : list2) {
+            if (!set.contains(numTwo)) {
+                return false; 
+            } 
+        }
+
+        return true; // if list2 elements are in list1, return true
+
+    } // end of isSubset method 
 
 
     /**
@@ -53,10 +66,22 @@ class ProblemSolutions {
 
     public int findKthLargest(int[] array, int k) {
 
-        // ADD YOUR CODE HERE
+        // max heap created, using PriorityQueue for this method 
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
 
-        return 0;
-    }
+        // Add array elements to the max heap
+        for (int num : array) {
+            maxHeap.add(num);
+        } 
+
+        // Remove top k-1 elements from max heap
+        for (int i = 0; i < k - 1; i++) {
+            maxHeap.remove(); // remove largest element
+        } 
+
+        return maxHeap.remove(); // return the kth largest element
+
+    } // end of findKthLargest method
 
 
     /**
@@ -74,9 +99,31 @@ class ProblemSolutions {
 
     public int[] sort2Arrays(int[] array1, int[] array2) {
 
-        // ADD YOU CODE HERE
+        // HashSet to store elements of array1 and array2
+        HashSet<Integer> set = new HashSet<>(); 
 
-        return null;
-    }
+        // Add elements of array1 and array2 to HashSet
+        for (int num : array1) {
+            set.add(num);
+        }
+
+        for (int numTwo : array2) {
+            set.add(numTwo);
+        }
+
+        // Convert HashSet to ArrayList
+        ArrayList<Integer> list = new ArrayList<>(set); 
+
+        Collections.sort(list); // Sort the ArrayList
+
+        int[] result = new int[list.size()]; // Convert ArrayList to array
+
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
+
+        return result; // return sorted array
+
+    } // end of sort2Arrays method
 
 }
