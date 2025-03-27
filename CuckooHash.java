@@ -252,46 +252,42 @@ public class CuckooHash<K, V> {
 
 	public void put(K key, V value) {
 
-		int pos1 = hash1(key); // initial bucket location
-		int pos2 = hash2(key); // secondary bucket location
-
-		// If the key already exists in the table, check if the value is the same
-		// If it is, return
-		if (table[pos1] != null && table[pos1].getBucKey().equals(key)) {
-			if (table[pos1].getValue().equals(value))
-				return;
-		} else if (table[pos2] != null && table[pos2].getBucKey().equals(key)) {
-			if (table[pos2].getValue().equals(value))
-				return;
+		// this adds the hash1 key in variable
+		int hash = hash1(key);
+		// this checks for duplicates
+		if (table[hash] != null && table[hash].getBucKey().equals(key) && table[hash].getValue().equals(value)) {
+			// Return if there is.
+			return;
 		}
-
-		// If the key already exists in the table, but the value is different
-		// remove the key and value from the table
-		if (table[pos1] != null && table[pos1].getBucKey().equals(key)) {
-			table[pos1] = null;
-		} else if (table[pos2] != null && table[pos2].getBucKey().equals(key)) {
-			table[pos2] = null;
-		}
-
-		// Insert the key and value into the table
-		Bucket<K, V> newBucket = new Bucket<K, V>(key, value);
-		int count = 0;
-		while (count < CAPACITY) {
-			if (table[pos1] == null) {
-				table[pos1] = newBucket;
+		for (int i = 0; i < CAPACITY; i++) {
+			// Checks if key is null
+			if (table[hash] == null) {
+				// If it is it makes a new bucket with a key and value.
+				table[hash] = new Bucket<>(key, value);
+				// And return it
 				return;
-			} else {
-				Bucket<K, V> temp = table[pos1];
-				table[pos1] = newBucket;
-				newBucket = temp;
-				pos1 = hash2(newBucket.getBucKey());
 			}
-			count++;
+			// This save the previous key and value.
+			K previousKey = table[hash].getBucKey();
+			V previousValue = table[hash].getValue();
+			// We now kick out the old key, value pair and add new ones.
+			table[hash] = new Bucket<>(key, value);
+			// Sets the previous key value pair for insertion.
+			key = previousKey;
+			value = previousValue;
+			// Checks if it is the same as current hash.
+			if (hash1(key) == hash) {
+				// Swaps to hash hash2
+				hash = hash2(key);
+			} else {
+				// Swaps to hash1
+				hash = hash1(key);
+			}
 		}
-
-		// If we reach this point, we have a cycle and need to rehash
+		// Rehahses if for loop is completed
 		rehash();
-		put(newBucket.getBucKey(), newBucket.getValue());
+		// Recursivly call the put method.
+		put(key, value);
 
 	} // end put method
 
