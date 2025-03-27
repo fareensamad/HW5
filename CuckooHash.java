@@ -252,41 +252,48 @@ public class CuckooHash<K, V> {
 
 	public void put(K key, V value) {
 
-		// this adds the hash1 key in variable
-		int hash = hash1(key);
-		// this checks for duplicates
-		if (table[hash] != null && table[hash].getBucKey().equals(key) && table[hash].getValue().equals(value)) {
-			// Return if there is.
+		// Hash1 key in variable
+		int set = hash1(key);
+
+		// Check for duplicates
+		if (table[set] != null && table[set].getBucKey().equals(key) && table[set].getValue().equals(value)) {
 			return;
-		}
+		} 
+
+		// Loop through the table
 		for (int i = 0; i < CAPACITY; i++) {
 			// Checks if key is null
-			if (table[hash] == null) {
-				// If it is it makes a new bucket with a key and value.
-				table[hash] = new Bucket<>(key, value);
-				// And return it
+			// If it is, it makes a new bucket with a key and value.
+			if (table[set] == null) {
+				table[set] = new Bucket<>(key, value);
 				return;
 			}
-			// This save the previous key and value.
-			K previousKey = table[hash].getBucKey();
-			V previousValue = table[hash].getValue();
-			// We now kick out the old key, value pair and add new ones.
-			table[hash] = new Bucket<>(key, value);
-			// Sets the previous key value pair for insertion.
+
+			// save the previous key and value.
+			K previousKey = table[set].getBucKey();
+			V previousValue = table[set].getValue();
+
+			// Inserts the new key and value. Kick out the previous key and value.
+			table[set] = new Bucket<>(key, value);
+
+			// Sets previous key value pair for insertion.
 			key = previousKey;
 			value = previousValue;
+
 			// Checks if it is the same as current hash.
-			if (hash1(key) == hash) {
-				// Swaps to hash hash2
-				hash = hash2(key);
+			if (hash1(key) == set) {
+				// Swaps to hash2
+				set = hash2(key);
 			} else {
 				// Swaps to hash1
-				hash = hash1(key);
+				set = hash1(key);
 			}
 		}
-		// Rehahses if for loop is completed
+
+		// Rehash if their is a cycle detected.
 		rehash();
-		// Recursivly call the put method.
+
+		// Recursivly call put method.
 		put(key, value);
 
 	} // end put method
